@@ -1,0 +1,16 @@
+<!doctype html>
+<html ng-app>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+  </head>
+  <body>
+    <div data-ng-init="customers=[{name:'John Smith', city:'Phoenix'},{name:'John Doe', city:'New York'}, {name:'Jane Doe', city:'San Francisco' }]" >
+		Name: <br/>
+		<input type="text" data-ng-model="name" />{{ name }}
+		<br/>
+		<ul>
+			<li data-ng-repeat="cust in customers | filter:name | orderBy:'city' ">{{ cust.name | uppercase}} - {{cust.city | lowercase}}</li>
+		</ul>
+    </div>
+  </body>
+</html>
