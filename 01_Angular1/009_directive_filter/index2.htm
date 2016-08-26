@@ -1,0 +1,71 @@
+<!doctype html>
+<html ng-app="plunker" >
+<head>
+  <meta charset="utf-8">
+  <title>AngularJS Plunker</title>
+  <script>document.write('<base href="' + document.location + '" />');</script>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.5/angular.js"></script>
+  <script src="app.js"></script>
+</head>
+<body ng-controller="MainCtrl">
+  <h3>Total Records: {{model.plunks.length}}</h3>
+  <ul ng-repeat='plunk in model.plunks'>
+    <li><div>
+      <h3><a href='http://plnkr.co/{{plunk.id}}'>{{plunk.description}} (forks: {{plunk.forked}})</a></h3>
+      <img src="http://www.gravatar.com/avatar/{{plunk.user.gravatar_id}}">
+      
+      <!-- here we apply our blink directive -->
+      <blink>{{plunk.user.login | noname}}</blink>
+    </div>  
+    </li>
+  </ul>
+</body>
+<script>
+	// Register our directives
+	var app = angular.module('plunker', ['plunker.filters','plunker.directives']);
+
+	app.controller('MainCtrl', function($scope,$http) {
+	  $scope.model = {};
+	  $scope.model.plunks = [];
+	  
+	  $http.get('http://api.plnkr.co/plunks/views').success(function(data) {
+		$scope.model.plunks = data;
+	  });
+	  
+
+	});
+
+	angular.module('plunker.filters',[]).
+	  filter('noname',function() {
+		return function(input) {
+		  if(!input) {
+			return "Anonymous";
+		  } else {
+			return input;
+		  }
+		};
+	  });
+
+	//Creat a directive module, and create directive named 'blink'
+	angular.module('plunker.directives',[]).
+	  directive('blink',function() {
+		return {
+		  restrict: 'E', // this allows restriction of blink to an HTML element.
+		  transclude: true, // transclusion instructs angular to embed the original content from the DOM into the resultant output
+		  template: '<div ng-transclude></div>', // This is the template that will replace the <blink> tag. The ng-transclude indicates what element should be blended.
+		  link: function(scope,elem,attrs) { //our link function is what is invoked for the directive. In this case, simply toggle between hidden and visible css styles.
+			var v = true;
+			setInterval(function() {
+			  if(v) {
+				elem[0].style.visibility = 'hidden';
+			  } else {
+				elem[0].style.visibility = 'visible';
+			  }
+			  v = !v;
+			},1000);
+		  }
+		}
+	  });
+</script>
+</html>
