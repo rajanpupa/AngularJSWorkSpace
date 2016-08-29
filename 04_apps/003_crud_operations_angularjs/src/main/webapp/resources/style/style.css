@@ -3,3 +3,11 @@
   left: 10px;
   top: 10px;
 }
+
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}

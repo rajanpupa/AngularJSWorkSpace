@@ -1,16 +1,23 @@
 var demoApp = angular.module('demoApp',[]);
 
 demoApp.service('customerService', function($http){
+	
+	var url = '/getPersons';
+	
 	this.getCustomers = function(){
 		// this is returning a promise
-		return  $http.get('/getPersons');
+		return  $http.get(url);
 	};
 	this.deleteCustomer=function(cust){
 		console.log(cust);
-		return $http.delete('/getPersons/'+cust.id);
+		return $http.delete(url + '/' + cust.id);
 	};
 	this.addNewCustomer = function(cust){
-		return $http.post('/getPersons', cust);
+		return $http.post(url, cust);
+	};
+	
+	this.editCustomer = function(cust){
+		return $http.put(url, cust);
 	}
 });
 		
@@ -32,8 +39,6 @@ demoApp.controller('SimpleController', function($log, $scope, customerService){
 	$scope.greeting = " Hello World! This is a directive!!! doing the magic";
 	
 	$scope.del = function(cust){
-		//var spinner = document.getElementsByClassName("fa fa-spinner")[0];
-		//spinner.style.display='block';
 		customerService.deleteCustomer(cust)
 			.then(function(payload){
 				// if the webservice successfully returns, then delete it from model
@@ -41,28 +46,54 @@ demoApp.controller('SimpleController', function($log, $scope, customerService){
 				$scope.customers.splice(index, 1); 
 			});
 	};
-	$scope.edit = function(cust){
-		// first show a form with the customer information populated
-		// if the user clicks save(not cancel), then trigger another method to update and refresh
-		console.log("edit button clicked");
-	};
+	
 	$scope.newCustomer = {};
-	$scope.add = function(){
+	$scope.model = {};
+	$scope.addClicked = function(){
+		$scope.model = {
+				title: 'Add new Customer'
+		};
+		$scope.newCustomer = {};
+		$('#addNewCustModel').modal('toggle');
+	}
+	$scope.formSubmit = function(){
 		var newCustomer = $scope.newCustomer;
 		$log.info(newCustomer);
-		if(newCustomer.name && newCustomer.city){
-			customerService.addNewCustomer(newCustomer)
+		if(newCustomer.id){
+			//edit the existing customer
+			customerService.editCustomer(newCustomer)
 			.then(function(payload){
-				console.log(payload.data);
 				loadCustomers();
 				$scope.newCustomer = {};
 				$('#addNewCustModel').modal('toggle');
 				$scope.$apply();
-			})
-			
+			});
+		}else{
+			if(newCustomer.name && newCustomer.city){
+				customerService.addNewCustomer(newCustomer)
+				.then(function(payload){
+					console.log(payload.data);
+					loadCustomers();
+					$scope.newCustomer = {};
+					$('#addNewCustModel').modal('toggle');
+					$scope.$apply();
+				});
+			}
 		}
+		
+		
 	};
-});
+	
+	$scope.editClick = function(cust){
+		$scope.model.title= 'Edit Customer';
+		
+		$scope.newCustomer.id=cust.id;
+		$scope.newCustomer.name = cust.name;
+		$scope.newCustomer.city = cust.city;
+		
+		$('#addNewCustModel').modal('toggle');
+	}
+});//controller
 
 demoApp.directive('greeting', function(){
 	return {

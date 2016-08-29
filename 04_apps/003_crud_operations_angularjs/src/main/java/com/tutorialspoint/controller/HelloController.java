@@ -62,6 +62,22 @@ public class HelloController{
       
    }
    
+   @RequestMapping(value="getPersons", method = RequestMethod.PUT)
+   public @ResponseBody Person editPersons(@RequestBody Person person) throws Exception {
+	  
+	  if(person.getId()==null){
+		  throw new Exception();
+	  }
+	  
+	  Person toEdit = persons.stream().filter(a->a.getId().equals(person.getId())).collect(Collectors.toList()).get(0);
+	  
+	  toEdit.setName(person.getName());
+	  toEdit.setCity(person.getCity());
+	  
+	  return person;
+      
+   }
+   
    @RequestMapping(value="getPersons/{id}", method = RequestMethod.DELETE)
    public @ResponseBody String deletePerson(@PathVariable("id") Integer id) {
       if(persons != null && id != null){
