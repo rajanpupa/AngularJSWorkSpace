@@ -9,11 +9,16 @@
 ```
 
 * Module is an object container which could have
-	** config -> Routes
-	** Filter
-	** Directive
-	** Factory -> Service -> Provider -> Value
-	** Controller
+	
+	* config -> Routes
+	
+	* Filter
+	
+	* Directive
+	
+	* Factory -> Service -> Provider -> Value
+	
+	* Controller
 	
 ```
 var demoApp = angular.module('dempApp',[]);
